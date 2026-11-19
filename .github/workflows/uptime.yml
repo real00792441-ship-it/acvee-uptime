@@ -1,0 +1,27 @@
+name: Uptime
+# Доступность acveemarket.kz каждые 5 минут (расписание GitHub может сдвигаться на несколько минут). Сообщение в Telegram — только
+# когда сайт упал или снова заработал (check.mjs). Секреты: TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID. Вручную — Actions → Uptime → Run.
+on:
+  schedule:
+    - cron: '*/5 * * * *'
+  workflow_dispatch:
+permissions:
+  actions: read
+  contents: read
+concurrency:
+  group: uptime
+  cancel-in-progress: false
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node check.mjs
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
